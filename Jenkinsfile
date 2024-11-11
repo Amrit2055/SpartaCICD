@@ -7,7 +7,7 @@ pipeline {
             steps {
                 echo 'Running Vagrant Validation...'
                 script {
-                    sh 'vagrant validate'  // Run the shell command outside the sandbox
+                    bat 'vagrant validate'  // Run on Windows
                 }
             }
         }
@@ -17,7 +17,7 @@ pipeline {
             steps {
                 echo 'Starting Vagrant VMs...'
                 script {
-                    sh 'vagrant up'  // Run the shell command outside the sandbox
+                    bat 'vagrant up'  // Run on Windows
                 }
             }
         }
@@ -33,7 +33,7 @@ pipeline {
         failure {
             echo 'Deployment failed. See logs for details.'
             script {
-                sh 'vagrant destroy -f'  // Rollback mechanism outside the sandbox
+                bat 'vagrant destroy -f'  // Rollback mechanism for Windows
             }
         }
     }
