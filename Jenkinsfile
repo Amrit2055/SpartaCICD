@@ -1,9 +1,39 @@
 pipeline {
     agent any
+
     stages {
-        stage('Test Vagrant Version') {
+        // Security Check Stage
+        stage('Security Check') {
             steps {
-                sh 'vagrant --version'  // This will check if vagrant works in the Jenkins pipeline
+                echo 'Running Vagrant Validation...'
+                script {
+                    sh 'vagrant validate'  // Run the shell command outside the sandbox
+                }
+            }
+        }
+
+        // Deployment Stage
+        stage('Deployment') {
+            steps {
+                echo 'Starting Vagrant VMs...'
+                script {
+                    sh 'vagrant up'  // Run the shell command outside the sandbox
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline completed.'
+        }
+        success {
+            echo 'Deployment successful!'
+        }
+        failure {
+            echo 'Deployment failed. See logs for details.'
+            script {
+                sh 'vagrant destroy -f'  // Rollback mechanism outside the sandbox
             }
         }
     }
