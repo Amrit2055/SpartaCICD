@@ -17,17 +17,6 @@ pipeline {
                 sh 'vagrant up'  // Start the web_server and db_server VMs
             }
         }
-
-        // Rollback Mechanism
-        stage('Rollback') {
-            when {
-                failure()  // Only runs if any previous stage fails
-            }
-            steps {
-                echo 'Rolling back: Destroying VMs due to failure...'
-                sh 'vagrant destroy -f'  // Force destroy the VMs
-            }
-        }
     }
 
     post {
@@ -39,6 +28,10 @@ pipeline {
         }
         failure {
             echo 'Deployment failed. See logs for details.'
+            
+            // Rollback Mechanism
+            echo 'Rolling back: Destroying VMs due to failure...'
+            sh 'vagrant destroy -f'  // Force destroy the VMs
         }
     }
 }
