@@ -6,7 +6,9 @@ pipeline {
         stage('Security Check') {
             steps {
                 echo 'Running Vagrant Validation...'
-                sh 'vagrant validate'  // Check for Vagrantfile syntax errors
+                dir('D:/iaC_Sparta_Project') {  // Path to the directory containing the Vagrantfile
+                    sh 'vagrant validate'  // Check for Vagrantfile syntax errors
+                }
             }
         }
 
@@ -14,7 +16,9 @@ pipeline {
         stage('Deployment') {
             steps {
                 echo 'Starting Vagrant VMs...'
-                sh 'vagrant up'  // Start the web_server and db_server VMs
+                dir('D:/iaC_Sparta_Project') {  // Path to the directory containing the Vagrantfile
+                    sh 'vagrant up'  // Start the web_server and db_server VMs
+                }
             }
         }
     }
@@ -31,7 +35,9 @@ pipeline {
             
             // Rollback Mechanism
             echo 'Rolling back: Destroying VMs due to failure...'
-            sh 'vagrant destroy -f'  // Force destroy the VMs
+            dir('D:/iaC_Sparta_Project') {  // Path to the directory containing the Vagrantfile
+                sh 'vagrant destroy -f'  // Force destroy the VMs
+            }
         }
     }
 }
