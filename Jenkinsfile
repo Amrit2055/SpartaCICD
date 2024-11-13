@@ -5,14 +5,16 @@ pipeline {
         stage('Retrieve Vault Server IP') {
             steps {
                 script {
-                    // Retrieve host IP address based on OS
+                    // Retrieve host IP address based on the OS
+                    def hostIp = ''
                     if (isUnix()) {
-                        def hostIp = sh(script: """hostname -I | awk '{print \$1}'""", returnStdout: true).trim()
-                        env.VAULT_ADDR = "http://${hostIp}:8200"
+                        hostIp = sh(script: "hostname -I | awk '{print \$1}'", returnStdout: true).trim()
                     } else {
-                        def hostIp = bat(script: 'powershell -command "(Get-NetIPAddress -AddressFamily IPv4 | ForEach-Object { $_.IPAddress })[0]"', returnStdout: true).trim()
-                        env.VAULT_ADDR = "http://${hostIp}:8200"
+                        // PowerShell command for Windows to get the first IPv4 address
+                        hostIp = bat(script: 'powershell -command "(Get-NetIPAddress -AddressFamily IPv4 | Select-Object -First 1).IPAddress"', returnStdout: true).trim()
+                        hostIp = hostIp.split("\\r?\\n")[2].trim() // Adjusted to remove extra PowerShell formatting
                     }
+                    env.VAULT_ADDR = "http://${hostIp}:8200"
                     echo "Vault server IP set to: ${env.VAULT_ADDR}"
                 }
             }
